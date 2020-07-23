@@ -1,0 +1,21 @@
+- hosts: localhost
+  connection: local
+
+  tasks:
+      
+    - name: Install Role NodeJS
+      local_action: command ansible-galaxy install -f geerlingguy.nodejs 
+
+    - name: Check if NodeJS is already installed
+      stat: path=/usr/bin/node
+      register: node_exists
+
+    - name: Applying role NodeJS
+      command: mv ~/.ansible/roles/geerlingguy.nodejs ~/.ansible/roles/pwslab.nodejs
+      when: not node_exists.stat.exists
+      ignore_errors: yes
+
+    - name: Installing NodeJS
+      include_role:
+        name: pwslab.nodejs
+      when: not node_exists.stat.exists
